@@ -113,59 +113,67 @@ for epoch in range(num_epoch):
         torch.save({'epoch': i,'model_state_dict': model.state_dict(),'optimizer_state_dict': optimizer.state_dict()}, PATH)
 
 
-correct = 0
-total = 0
-if c==0:
-    c=1
-for image,label in train_loader:
-    x = Variable(image,volatile=True)
-    y_= Variable(label)
-    if use_cuda:
-        x = x.cuda()
-        y_ = y_.cuda()
+checkpoint = torch.load(PATH)
+model.load_state_dict(checkpoint['model_state_dict'])
+optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+epoch = checkpoint['epoch']
 
-    output = model.forward(x)
-    _,output_index = torch.max(output,1)
-    
-    
-    total += label.size(0)
-    correct += (output_index == y_).sum().float()
-    
-print("Accuracy of Train Data: {} ".format(100*correct/total))
+model.eval()
 
-correct = 0
-total = 0
+with torch.no_grad():
+  correct = 0
+  total = 0
+  if c==0:
+      c=1
+  for image,label in train_loader:
+      x = Variable(image,volatile=True)
+      y_= Variable(label)
+      if use_cuda:
+          x = x.cuda()
+          y_ = y_.cuda()
 
-for image,label in valid_loader:
-    x = Variable(image,volatile=True)
-    y_= Variable(label)
-    if use_cuda:
-        x = x.cuda()
-        y_ = y_.cuda()
+      output = model.forward(x)
+      _,output_index = torch.max(output,1)
+      
+      
+      total += label.size(0)
+      correct += (output_index == y_).sum().float()
+      
+  print("Accuracy of Train Data: {} ".format(100*correct/total))
 
-    output = model.forward(x)
-    _,output_index = torch.max(output,1)
-        
-    total += label.size(0)
-    correct += (output_index == y_).sum().float()
-    
-print("Accuracy of Validation Data: {}".format(100*correct/total))
+  correct = 0
+  total = 0
 
-correct = 0
-total = 0
+  for image,label in valid_loader:
+      x = Variable(image,volatile=True)
+      y_= Variable(label)
+      if use_cuda:
+          x = x.cuda()
+          y_ = y_.cuda()
 
-for image,label in test_loader:
-    x = Variable(image,volatile=True)
-    y_= Variable(label)
-    if use_cuda:
-        x = x.cuda()
-        y_ = y_.cuda()
+      output = model.forward(x)
+      _,output_index = torch.max(output,1)
+          
+      total += label.size(0)
+      correct += (output_index == y_).sum().float()
+      
+  print("Accuracy of Validation Data: {}".format(100*correct/total))
 
-    output = model.forward(x)
-    _,output_index = torch.max(output,1)
-        
-    total += label.size(0)
-    correct += (output_index == y_).sum().float()
-    
-print("Accuracy of Test Data: {}".format(100*correct/total))
+  correct = 0
+  total = 0
+
+  for image,label in test_loader:
+      x = Variable(image,volatile=True)
+      y_= Variable(label)
+      if use_cuda:
+          x = x.cuda()
+          y_ = y_.cuda()
+
+      output = model.forward(x)
+      _,output_index = torch.max(output,1)
+          
+      total += label.size(0)
+      correct += (output_index == y_).sum().float()
+      
+  print("Accuracy of Test Data: {}".format(100*correct/total))
 
