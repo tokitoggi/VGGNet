@@ -17,6 +17,12 @@ import numpy as np
 import json
 import os
 
+# Allocating GPU
+GPU_NUM=2
+device = torch.device(f'cuda:{GPU_NUM}' if torch.cuda.is_available() else 'cpu')
+torch.cuda.set_device(device) #change allocation of current GPU
+print('Current cuda device',torch.cuda.current_device()) # Check
+
 #Data Download Path 
 download_path = './data'
 if not os.path.exists(download_path):
@@ -126,7 +132,7 @@ with torch.no_grad():
   if c==0:
       c=1
   for image,label in train_loader:
-      x = Variable(image,volatile=True)
+      x = Variable(image)
       y_= Variable(label)
       if use_cuda:
           x = x.cuda()
@@ -145,7 +151,7 @@ with torch.no_grad():
   total = 0
 
   for image,label in valid_loader:
-      x = Variable(image,volatile=True)
+      x = Variable(image)
       y_= Variable(label)
       if use_cuda:
           x = x.cuda()
@@ -163,7 +169,7 @@ with torch.no_grad():
   total = 0
 
   for image,label in test_loader:
-      x = Variable(image,volatile=True)
+      x = Variable(image)
       y_= Variable(label)
       if use_cuda:
           x = x.cuda()
